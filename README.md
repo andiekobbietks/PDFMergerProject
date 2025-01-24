@@ -1,20 +1,83 @@
-# Technical Journey: Building a PDF Merger with PyPDF2
+# PDF Merger Project
 
-## Project Overview
+## Setup Instructions
+
+### Local Windows Setup
+
+1. Create virtual environment:
+
+```sh
+python -m venv venv
+venv\Scripts\activate
+```
+
+1. Install requirements:
+
+```sh
+pip install -r requirements.txt
+```
+
+1. Run locally:
+
+```sh
+python pdf_merger.py
+```
+
+### Google Colab Setup
+
+1. Open [Google Colab](https://colab.research.google.com)
+2. Create new notebook
+3. Select Runtime > Change runtime type > Python 3
+4. Install required package:
+
+```python
+!pip install PyPDF2
+```
+
+## Development Journey
+
+### Initial Local Windows Attempt
+
+- Tried implementing with local file system access
+- Encountered issues with form field preservation
+- File path handling problems
+- See [attempts/local_attempt.py](attempts/local_attempt.py)
+
+### Google Colab Migration
+
+- Moved to Colab for better PDF handling
+- Initial version had argument order issues
+- Form fields were being stripped
+- See [attempts/colab_attempt.py](attempts/colab_attempt.py)
+
+### Final Working Solution
+
+- Implemented correct page ordering
+- Fixed form field preservation
+- Added proper error handling
+- See [pdf_merger.py](pdf_merger.py)
+
+## Technical Details
+
+See [diagrams.md](diagrams.md) for visual architecture and flow diagrams.
+
+## Technical Journey: Building a PDF Merger with PyPDF2
+
+### Project Overview
 
 This technical narrative documents the development of a specialised PDF merger tool designed to handle form-enabled PDFs while preserving interactive form data. The project emerged from a specific requirement to merge 13-page PDFs with particular attention to page reordering and form field preservation.
 
-## Initial Development Phase
+### Initial Development Phase
 
 The journey began with a fundamental challenge: creating a tool that could merge PDFs while maintaining the integrity of interactive form fields. The initial implementation utilised **PyPDF2**, a Python library chosen for its robust PDF manipulation capabilities. Early development focused on basic PDF merging functionality using **PdfReader** and **PdfWriter** classes.
 
-## Technical Challenges and Evolution
+### Technical Challenges and Evolution
 
-### Form Field Preservation Challenge
+#### Form Field Preservation Challenge
 
 The first significant hurdle emerged when attempting to preserve form data during the merging process. The initial approach using standard PyPDF2 page copying resulted in form fields being stripped from the output document. This led to the implementation of a form field preservation mechanism using **AcroForm** data structures.
 
-### Page Ordering Requirements
+#### Page Ordering Requirements
 
 A specific requirement emerged: the tool needed to perform two key operations:
 
@@ -23,21 +86,21 @@ A specific requirement emerged: the tool needed to perform two key operations:
 
 This necessitated careful handling of page indexing and proper sequencing of merge operations.
 
-### Error Resolution Journey
+#### Error Resolution Journey
 
-#### IndirectObject Error
+##### IndirectObject Error
 
 The first major technical obstacle manifested as an **'IndirectObject' object is not iterable** error. This occurred during attempts to validate PDF content. The solution involved restructuring the validation approach to handle PDF objects more appropriately, focusing on direct page access rather than attempting to iterate through indirect objects.
 
-#### PageObject Reader Attribute Error
+##### PageObject Reader Attribute Error
 
 The next challenge presented itself as a **'PageObject' object has no attribute 'reader'** error. This revealed a fundamental misunderstanding of PyPDF2's object model. The resolution required shifting from page-level operations to reader-level operations for form field management.
 
-## Technical Implementation Details
+### Technical Implementation Details
 
-### Core Components
+#### Core Components
 
-#### PDF Validation
+##### PDF Validation
 
 ```python
 def validate_pdf(pdf_path):
@@ -50,7 +113,7 @@ def validate_pdf(pdf_path):
         return False
 ```
 
-#### Form Field Preservation
+##### Form Field Preservation
 
 The implementation evolved to handle form fields at the document level rather than the page level:
 
@@ -61,7 +124,7 @@ if "/AcroForm" in doc1.trailer["/Root"]:
     })
 ```
 
-### User Interface Integration
+#### User Interface Integration
 
 The project incorporates a **tkinter**-based graphical interface for file selection and error reporting. This enhances usability whilst maintaining robust error handling:
 
@@ -76,9 +139,9 @@ def get_pdf_file(prompt):
     return file_path if file_path else None
 ```
 
-## System Architecture and Flow
+### System Architecture and Flow
 
-### PDF Merging Process
+#### PDF Merging Process
 
 ```mermaid
 flowchart TD
@@ -96,7 +159,7 @@ flowchart TD
     K --> L[End]
 ```
 
-### Component Architecture
+#### Component Architecture
 
 ```mermaid
 classDiagram
@@ -118,7 +181,7 @@ classDiagram
     PDFMerger --> FileHandler
 ```
 
-### Form Field Handling Process
+#### Form Field Handling Process
 
 ```mermaid
 sequenceDiagram
@@ -137,7 +200,7 @@ sequenceDiagram
     UI->>User: Show Success
 ```
 
-## Learning Outcomes and Best Practices
+### Learning Outcomes and Best Practices
 
 The development process revealed several critical insights about PDF manipulation:
 
@@ -147,7 +210,7 @@ The development process revealed several critical insights about PDF manipulatio
 
 3. **Form Data Preservation**: The complexity of maintaining interactive elements in PDFs led to a deeper understanding of PDF document structures and the **AcroForm** specification.
 
-## Future Considerations
+### Future Considerations
 
 The project has potential for several enhancements:
 
@@ -156,6 +219,6 @@ The project has potential for several enhancements:
 - Support for different PDF versions and structures
 - Integration of digital signature preservation
 
-## Conclusion
+### Conclusion
 
 This journey through PDF manipulation development illustrates the complexities of working with document formats that combine static content with interactive elements. The evolution of the code from basic merging to handling complex form preservation demonstrates the importance of iterative development and careful error handling in document processing applications.
